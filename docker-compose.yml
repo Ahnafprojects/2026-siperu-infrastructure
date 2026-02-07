@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # 1. SERVICE BACKEND (ASP.NET)
+  backend:
+    container_name: siperu-backend
+    build:
+      context: ../2026-siperu-backend # Mundur satu folder, lalu masuk ke backend
+      dockerfile: Dockerfile
+    ports:
+      - "5250:8080" # Port Laptop : Port Container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ../2026-siperu-backend/siperu.db:/app/siperu.db # Agar data DB tidak hilang
+
+  # 2. SERVICE FRONTEND (React + Vite)
+  frontend:
+    container_name: siperu-frontend
+    build:
+      context: ../2026-siperu-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5250/api
+    depends_on:
+      - backend # Frontend baru jalan kalau Backend sudah bangun
